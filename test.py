@@ -13,10 +13,19 @@ result = app.invoke({
     "tool_results": [],
     "findings": [],
     "charts": [],
+    "business_insights": [],
+    "verification_feedback": [],
 })
 
 print("Selected agents:", result["next_agents"])
 print("Calculated results:", result.get("tool_results", []))
-print("Analysis findings:", result.get("findings", []))
 print("Charts generated:", len(result.get("charts", [])))
-print("Execution trace:", result["agent_trace"])
+print("Verification:", result.get("verification_status"))
+
+print("\nBusiness insights:")
+for insight in result.get("business_insights", []):
+    print("-", insight)
+
+print("\nExecution trace:")
+for item in result["agent_trace"]:
+    print(item)
