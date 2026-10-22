@@ -10,6 +10,13 @@ Data Analyst Agent is an AI-powered application designed to help users explore d
 - Explore data through interactive visualizations.
 - Ask questions about the dataset through an AI Analyst interface.
 - View AI-generated explanations and insights based on the available data.
+- 
+
+<img width="1872" height="797" alt="Screenshot 2026-10-20 210819" src="https://github.com/user-attachments/assets/63a5e0d1-db8f-4ccb-a7c4-0a68b7c82496" />
+<img width="1912" height="872" alt="Screenshot 2026-10-20 210848" src="https://github.com/user-attachments/assets/b52cb1ff-34f8-4fb8-932c-396ef7c09023" />
+<img width="1902" height="812" alt="Screenshot 2026-10-20 210729" src="https://github.com/user-attachments/assets/d84304e3-73d2-4c99-8675-4d9382333d8a" />
+![Uploading Screenshot 2026-10-20 210838.png…]()
+
 
 ## Technology Stack
 
