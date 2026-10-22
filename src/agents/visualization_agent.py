@@ -1,68 +1,48 @@
+
 """Visualization agent."""
 
-import pandas as pd
-import plotly.express as px
+from src.tools.data_loader import load_data
+from src.tools.chart_tools import create_chart
 
 
 def visualization_agent_node(state: dict) -> dict:
     # Load the dataset
-    df = pd.read_csv(state["dataset_path"])
+    df = load_data(state["dataset_path"])
 
     charts = []
-    question = state.get("user_question", "").lower()
 
     # Create a revenue chart by region
     if "region" in df.columns and "revenue" in df.columns:
-        region_data = (
-            df.groupby("region", dropna=False, as_index=False)["revenue"]
-            .sum()
-            .sort_values("revenue", ascending=False)
-        )
-
-        region_data["region"] = region_data["region"].fillna("Missing region")
-
-        fig = px.bar(
-            region_data,
-            x="region",
-            y="revenue",
+        chart = create_chart(
+            df=df,
+            chart_type="bar",
+            x_column="region",
+            y_column="revenue",
             title="Revenue by Region",
-            labels={
-                "region": "Region",
-                "revenue": "Total Revenue"
-            }
         )
 
         charts.append({
             "chart_name": "revenue_by_region",
-            "chart_type": "bar",
-            "title": "Revenue by Region",
-            "figure_json": fig.to_json()
+            "chart_type": chart["chart_type"],
+            "title": chart["title"],
+            "figure_json": chart["figure_json"],
         })
 
     # Create a profit chart by category
     if "category" in df.columns and "profit" in df.columns:
-        category_data = (
-            df.groupby("category", as_index=False)["profit"]
-            .sum()
-            .sort_values("profit", ascending=False)
-        )
-
-        fig = px.bar(
-            category_data,
-            x="category",
-            y="profit",
+        chart = create_chart(
+            df=df,
+            chart_type="bar",
+            x_column="category",
+            y_column="profit",
             title="Profit by Category",
-            labels={
-                "category": "Category",
-                "profit": "Total Profit"
-            }
         )
 
         charts.append({
             "chart_name": "profit_by_category",
-            "chart_type": "bar",
-            "title": "Profit by Category",
-            "figure_json": fig.to_json()
+            "chart_type": chart["chart_type"],
+            "title": chart["title"],
+            "figure_json": chart["figure_json"],
         })
 
     # Save chart specifications in the shared state
@@ -72,7 +52,7 @@ def visualization_agent_node(state: dict) -> dict:
         "agent_trace": state.get("agent_trace", []) + [
             {
                 "agent": "visualization_agent",
-                "charts_count": len(charts)
+                "charts_count": len(charts),
             }
-        ]
+        ],
     }

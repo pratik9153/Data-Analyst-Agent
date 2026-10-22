@@ -1,26 +1,46 @@
+
 """Result verification agent."""
 
-import math
+from src.tools.data_loader import load_data
+from src.tools.verification_tools import verify_metric
 
 
 def critic_agent_node(state: dict) -> dict:
     # Collect any problems found during verification
     feedback = []
 
-    # Check calculated results
+    # Load the original dataset for independent checks
+    df = load_data(state["dataset_path"])
+
+    # Verify each calculated metric
     for item in state.get("tool_results", []):
+        metric = item.get("metric", "")
+        column = item.get("column")
+        operation = item.get("operation")
         value = item.get("value")
 
-        if not isinstance(value, (int, float)):
+        # Older results may not include column and operation
+        if not column or not operation:
             feedback.append(
-                f"Invalid numeric result: {item.get('metric')}"
+                f"Cannot independently verify metric '{metric}': "
+                "column or operation is missing."
             )
-        elif not math.isfinite(value):
+            continue
+
+        result = verify_metric(
+            df=df,
+            column=column,
+            operation=operation,
+            reported_value=value,
+        )
+
+        if not result["passed"]:
             feedback.append(
-                f"Non-finite result: {item.get('metric')}"
+                f"Verification failed for '{metric}': "
+                f"{result['reason']}"
             )
 
-    # Check analysis findings
+    # Check the structure of analysis findings
     for finding in state.get("findings", []):
         if not finding.get("analysis"):
             feedback.append("An analysis finding has no name.")
@@ -42,7 +62,7 @@ def critic_agent_node(state: dict) -> dict:
             {
                 "agent": "critic_agent",
                 "status": status,
-                "issues_found": len(feedback)
+                "issues_found": len(feedback),
             }
-        ]
+        ],
     }

@@ -4,15 +4,19 @@ from langgraph.graph import StateGraph, START, END
 from src.graph.state import DataAnalystState
 from src.graph.nodes import supervisor_node
 
+from src.agents.profiler_agent import profiler_agent_node
 from src.agents.query_agent import query_agent_node
 from src.agents.analysis_agent import analysis_agent_node
 from src.agents.visualization_agent import visualization_agent_node
 from src.agents.critic_agent import critic_agent_node
 from src.agents.business_analyst_agent import business_analyst_node
+from src.agents.reporting_agent import reporting_agent_node
 
 
-# Specialist agents that the supervisor can select
+
+# Specialist agents the supervisor can select
 AGENT_NAMES = [
+    "profiler_agent",
     "query_agent",
     "analysis_agent",
     "visualization_agent",
@@ -23,23 +27,25 @@ def build_workflow():
     # Create the graph using our shared state
     graph = StateGraph(DataAnalystState)
 
-    # Register all nodes
+    # Register all agents
     graph.add_node("supervisor", supervisor_node)
+    graph.add_node("profiler_agent", profiler_agent_node)
     graph.add_node("query_agent", query_agent_node)
     graph.add_node("analysis_agent", analysis_agent_node)
     graph.add_node("visualization_agent", visualization_agent_node)
     graph.add_node("critic_agent", critic_agent_node)
     graph.add_node("business_analyst", business_analyst_node)
+    graph.add_node("reporting_agent", reporting_agent_node)
 
     # Start with the supervisor
     graph.add_edge(START, "supervisor")
 
-    # Select the first agent chosen by the supervisor
+    # Choose the first agent selected by the supervisor
     def first_agent(state: DataAnalystState) -> str:
         agents = state.get("next_agents", [])
         return agents[0] if agents else "critic_agent"
 
-    # Select the next agent that has not run yet
+    # Find the next selected agent that has not run yet
     def next_agent(state: DataAnalystState) -> str:
         agents = state.get("next_agents", [])
 
@@ -56,16 +62,20 @@ def build_workflow():
 
         return remaining[0] if remaining else "critic_agent"
 
+    # Map valid routes between agents
+    specialist_routes = {
+        "profiler_agent": "profiler_agent",
+        "query_agent": "query_agent",
+        "analysis_agent": "analysis_agent",
+        "visualization_agent": "visualization_agent",
+        "critic_agent": "critic_agent",
+    }
+
     # Route from the supervisor to the first selected agent
     graph.add_conditional_edges(
         "supervisor",
         first_agent,
-        {
-            "query_agent": "query_agent",
-            "analysis_agent": "analysis_agent",
-            "visualization_agent": "visualization_agent",
-            "critic_agent": "critic_agent",
-        },
+        specialist_routes,
     )
 
     # Run selected specialist agents in sequence
@@ -73,15 +83,10 @@ def build_workflow():
         graph.add_conditional_edges(
             agent_name,
             next_agent,
-            {
-                "query_agent": "query_agent",
-                "analysis_agent": "analysis_agent",
-                "visualization_agent": "visualization_agent",
-                "critic_agent": "critic_agent",
-            },
+            specialist_routes,
         )
 
-    # Run the business analyst only when verification passes
+    # Continue only when verification passes
     def after_critic(state: DataAnalystState) -> str:
         if state.get("verification_status") == "passed":
             return "business_analyst"
@@ -97,7 +102,8 @@ def build_workflow():
         },
     )
 
-    # Finish after business insights are generated
-    graph.add_edge("business_analyst", END)
+    # Generate the final answer
+    graph.add_edge("business_analyst", "reporting_agent")
+    graph.add_edge("reporting_agent", END)
 
     return graph.compile()

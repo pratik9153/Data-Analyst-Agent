@@ -1,1 +1,0 @@
-"""Critic verification tests."""
