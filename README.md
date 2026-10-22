@@ -33,8 +33,8 @@ Data Analyst Agent is an AI-powered application designed to help users explore d
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/pratik9153/AI-Data-Analyst-Agent.git
-cd AI-Data-Analyst-Agent
+git clone https://github.com/pratik9153/Data-Analyst-Agent.git
+cd Data-Analyst-Agent
 ```
 
 ### 2. Create and activate a virtual environment
