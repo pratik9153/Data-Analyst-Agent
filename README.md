@@ -15,7 +15,8 @@ Data Analyst Agent is an AI-powered application designed to help users explore d
 <img width="1872" height="797" alt="Screenshot 2026-10-20 210819" src="https://github.com/user-attachments/assets/63a5e0d1-db8f-4ccb-a7c4-0a68b7c82496" />
 <img width="1912" height="872" alt="Screenshot 2026-10-20 210848" src="https://github.com/user-attachments/assets/b52cb1ff-34f8-4fb8-932c-396ef7c09023" />
 <img width="1902" height="812" alt="Screenshot 2026-10-20 210729" src="https://github.com/user-attachments/assets/d84304e3-73d2-4c99-8675-4d9382333d8a" />
-![Uploading Screenshot 2026-10-20 210838.png…]()
+<img width="1902" height="897" alt="Screenshot 2026-10-20 210639" src="https://github.com/user-attachments/assets/fdb1ce88-e47b-43a4-be88-1bcca53073c0" />
+
 
 
 ## Technology Stack
